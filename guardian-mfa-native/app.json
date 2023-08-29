@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "guardian-mfa-native",
+    "slug": "guardian-mfa-native",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": false,
+      "bundleIdentifier": "com.auth0poc.guardiannativemfa"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.auth0poc.guardiannativemfa"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "react-native-auth0",
+        {
+          "domain": "guardian-push-generic.eu.auth0.com"
+        }
+      ],
+      [
+        "@react-native-firebase/app"
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "efb94f1f-156f-48e1-b4be-bb028e9e88d6"
+      }
+    }
+  }
+}
