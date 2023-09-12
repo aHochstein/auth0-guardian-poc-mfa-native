@@ -2,6 +2,8 @@
 
 This repository contains a example implementation of Auth0 Guardian and a native MFA Flow using the authentication api in the background on the same device.
 
+The native flow does need a Action on the Auth0 Tenant that triggers MFA on a refresh token exchange when a additional parameter is present - you can find an example implementation in the actions folder.
+
 
 ## Get access token with enroll scope for MFA API
 
