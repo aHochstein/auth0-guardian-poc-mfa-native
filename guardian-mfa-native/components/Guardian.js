@@ -1,6 +1,5 @@
 import { Button, View, Text } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import messaging from '@react-native-firebase/messaging';
 import config from '../auth0-configuration';
 import Auth0Guardian from 'react-native-auth0-guardian';
@@ -8,13 +7,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BrandedButton from './BrandedButton';
 import MfaService from './mfa/MfaService';
 import jwtDecode from 'jwt-decode';
+import { AuthenticationContext } from '../contexts/AuthenticationContext';
 
 export default function Guardian() {
     Auth0Guardian.initialize(config.guardianServiceUrl);
+    const [authState,setAuthState, auth0Client] = useContext(AuthenticationContext);
 
     const [enrolled, setEnrolled] = useState(false);
     const [otp, setOtp] = useState('-');
-    const {getCredentials} = useAuth0();
+ 
     const [accessToken, setAccessToken] = useState(); 
 
     const setAndCleanAccessToken = (accessToken) => {
@@ -24,7 +25,7 @@ export default function Guardian() {
 
     useEffect(() => {
         const fetchAccessToken = async () => {
-          let accessToken = (await getCredentials()).accessToken;
+          let accessToken = authState.accessToken;
           setAndCleanAccessToken(accessToken);
         }
         if(!accessToken) {
@@ -48,8 +49,7 @@ export default function Guardian() {
     const enroll = async () => {
         await Auth0Guardian.initialize(config.guardianServiceUrl);
         var deviceToken = await messaging().getToken();
-        var credentials = await getCredentials();
-        var json = await MfaService.associate(credentials.accessToken);
+        var json = await MfaService.associate(authState.accessToken);
         try {
                 const isEnrolled = await Auth0Guardian.enroll(json.barcode_uri, deviceToken);
                 console.log('Enrolled:' + isEnrolled)
@@ -73,7 +73,7 @@ export default function Guardian() {
     }
 
     const triggerMfa = async () => {
-      var credentials = await getCredentials();
+      var credentials = authState.accessToken;
       var mfaToken = await MfaService.retrieveMfaToken(credentials.refreshToken);
       let res = await MfaService.completeChallengeWithOtp(await getOtp(),mfaToken);
       if(res.access_token) {
@@ -116,7 +116,6 @@ export default function Guardian() {
         <View>
             <Text>{accessToken}</Text>
             {!enrolled && <BrandedButton onPress={enroll} title="Enroll Device for Guardian Push" />}
-            {enrolled && <BrandedButton onPress={triggerMfa} title="Trigger MFA Exchange" />}
             {enrolled && <BrandedButton onPress={unenroll} title="Unenroll Device from Guardian Push" />}
             {enrolled && <Text style={{fontSize: 20, textAlign: 'center'}} >Current OTP: {otp}</Text>}
         </View>

@@ -1,13 +1,14 @@
-import {useAuth0} from 'react-native-auth0';
 import BrandedButton from './BrandedButton';
+import { useContext } from 'react';
+import { AuthenticationContext } from '../contexts/AuthenticationContext';
 
 
 export default function LogoutButton( ) {
-    const {clearSession} = useAuth0();
+    const [authState,setAuthState, auth0Client] = useContext(AuthenticationContext);
 
     const onPress = async () => {
         try {
-            await clearSession();
+            setAuthState({signedId: false, accessToken : null});
         } catch (e) {
             console.log(e);
         }

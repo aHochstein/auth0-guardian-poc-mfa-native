@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Auth0Provider} from 'react-native-auth0';
+import Auth0 from 'react-native-auth0';
 import config from './auth0-configuration.js'
-import React, { useEffect} from 'react';
+import React, { useEffect, useState} from 'react';
 import messaging from '@react-native-firebase/messaging';
 import * as Notifications from "expo-notifications";
 import Auth0Guardian from 'react-native-auth0-guardian';
@@ -9,6 +10,7 @@ import Home from './components/Home.js';
 import Settings from './components/Settings.js';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { AuthenticationContext } from './contexts/AuthenticationContext.js';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -29,6 +31,17 @@ Notifications.setNotificationCategoryAsync(
 )
 
 export default function App() {
+  const auth0 = new Auth0({
+    domain: config.domain,
+    clientId: config.clientId,
+  });
+
+  const [authState,setAuthState] = useState({
+    id: null,
+    username: null,
+    signedIn: false
+  });
+    
   useEffect(() => {
     registerForPushNotificationsAsync();
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
@@ -67,8 +80,8 @@ export default function App() {
   });
 
   return (
-    <Auth0Provider domain={config.domain} clientId={config.clientId}>
-      <NavigationContainer>
+    <AuthenticationContext.Provider value={[authState, setAuthState, auth0]}>
+       <NavigationContainer>
       <Stack.Navigator>
             <Stack.Screen
             name="Home"
@@ -82,7 +95,7 @@ export default function App() {
             />
       </Stack.Navigator>
       </NavigationContainer>
-    </Auth0Provider>
+    </AuthenticationContext.Provider>
   );
 }
 

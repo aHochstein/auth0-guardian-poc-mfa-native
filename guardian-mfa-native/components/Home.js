@@ -1,20 +1,21 @@
 import LoginButton from './LoginButton';
 import { View, Text, StyleSheet, Image} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useAuth0 } from 'react-native-auth0';
 import LogoutButton from './LogoutButton';
 import Guardian from './Guardian';
 import BrandedButton from './BrandedButton';
+import { useContext } from 'react';
+import { AuthenticationContext } from '../contexts/AuthenticationContext';
 
 
 export default function Home({ navigation }) {
-    const { user } = useAuth0();
+    const [authState] = useContext(AuthenticationContext);
 
     const goToSettings = () => {
         navigation.navigate("Settings");
     }
 
-    const loggedIn = user !== undefined && user !== null;
+    const loggedIn = authState.signedIn !== undefined && authState.signedIn;
     return (
         <View style={styles.container}>
         <StatusBar style="auto" />
@@ -26,7 +27,6 @@ export default function Home({ navigation }) {
             }
             {loggedIn &&
             <View>
-                <Text>Welcome {user.name}</Text>
                 <BrandedButton onPress={goToSettings} title="MFA" />
                 <LogoutButton></LogoutButton>
             </View>
