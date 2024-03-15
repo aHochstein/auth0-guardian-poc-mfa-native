@@ -53,7 +53,7 @@ export default function App() {
     return () => subscription.remove();
   }, []);
 
-  messaging().onMessage(async remoteMessage => {
+  messaging().setBackgroundMessageHandler(async remoteMessage => {
     Notifications.scheduleNotificationAsync({
       content: {
         categoryIdentifier: 'mfa',
